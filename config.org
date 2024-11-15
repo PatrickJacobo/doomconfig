@@ -1,0 +1,189 @@
+#+title: Configuration for DOOM
+#+author: Patrick Lee
+#+email: leepatrick338@gmail.com
+
+* Index :TOC:
+- [[Cosmetics][Cosmetics]]
+- [[Latex stuff][Latex stuff]]
+- [[Shell opts][Shell opts]]
+- [[Org-mode stuff][Org-mode stuff]]
+- [[Keybinds][Keybinds]]
+- [[User stuff][User stuff]]
+- [[Some stuff to make things work well][Some stuff to make things work well]]
+- [[Projectile stuff][Projectile stuff]]
+- [[Undo stuff][Undo stuff]]
+
+* Cosmetics
+This are some global cosmetic customization to the setup
+This sets a theme
+Reloading for the theme
+Relative line numbers
+Attributes in Dirvish
+Beacon
+Nyan
+Mouse
+Splash image for the dashboard
+Scroll margin
+Nice cursor
+#+begin_src emacs-lisp
+(defun random-file-in-directory (directory)
+  "Return the path of a random file in DIRECTORY."
+  (let* ((files (directory-files directory t "^[^.]" t)) ; Get list of files excluding "." and ".."
+         (file-count (length files)))
+    (when (> file-count 0) ; Check if there are any files in the directory
+      (nth (random file-count) files)))) ; Return a random file from the list
+(setq doom-theme 'catppuccin)
+(add-hook 'server-after-make-frame-hook #'catppuccin-reload)
+(setq display-line-numbers-type 'relative)
+(setq dirvish-attributes
+      '(vc-state subtree-state git-msg file-time file-size))
+(setq scroll-margin 8)
+(setq evil-normal-state-cursor '(box "white"))
+(setq evil-insert-state-cursor '(box "white"))
+(setq evil-visual-state-cursor '(box "white"))
+(beacon-mode 1)
+(nyan-mode)
+(xterm-mouse-mode 1)
+(setq fancy-splash-image (random-file-in-directory "~/assets/emacs_stuff"))
+(setq doom-font (font-spec :family "JetBrains Mono " :size 15))
+#+end_src
+
+#+RESULTS:
+: #<font-spec nil nil JetBrains\ Mono\  nil nil nil nil nil 15 nil nil nil nil>
+
+* Latex stuff
+LSP for Latex
+Cd Latex for some signs
+PDF to be able to see latex
+xelatex as default engine
+Auto save
+Auto parse
+Xenops; cause it does a lot of things
+
+#+begin_src emacs-lisp
+(map! :map cdlatex-mode-map
+      :i "TAB" #'cdlatex-tab)
+(add-hook 'latex-mode-hook #'xenops-mode)
+(add-hook 'LaTeX-mode-hook #'xenops-mode)
+(setq +latex-viewers '(pdf-tools zathura))
+(setq auto-revert-interval 0.5)
+(add-hook! 'latex-mode-hook
+  (setq Tex-engine 'xelatex) 99)
+(setq TeX-auto-save t
+      TeX-parse-self t)
+(setq-default TeX-master nil)
+#+end_src
+
+* Shell opts
+This shell opts are somewhat "inspired" by DT;
+And with inspired I mean directly stolen.
+
+#+begin_src emacs-lisp
+(setq shell-file-name "/usr/bin/zsh"
+      vterm-max-scrollback 5000)
+(setq eshell-rc-script "~/.config/doom/eshell/profile"
+      eshell-aliases-file "~/.config/doom/eshell/aliases"
+      eshell-history-size 5000
+      eshell-buffer-maximum-lines 5000
+      eshell-hist-ignoredups t
+      eshell-scroll-to-bottom-on-input t
+      eshell-destroy-buffer-when-process-dies t
+      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+(map! :leader
+      :desc "Eshell" "v s" #'eshell
+      :desc "Eshell popup" "v y" #'+eshell/toggle
+      :desc "Counsel eshell history" "v h" #'counsel-esh-history
+      :desc "Vtern popup" "v t" #'+vterm/toggle)
+#+end_src
+
+* Org-mode stuff
+This sets up some org mode stuff
+
+#+begin_src emacs-lisp
+(setq org-directory "~/org/")
+(after! org
+  (use-package! toc-org
+    :hook (org-mode . toc-org-mode)
+    :config
+    (setq toc-org-hrefify-default "org")
+    (add-hook 'org-mode-hook #'toc-org-enable))
+(use-package! org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default t)))
+(defun dt/insert-auto-tangle-tag ()
+  "Insert auto-tangle tag in a literate config."
+  (interactive)
+  (evil-org-open-below 1)
+  (insert "#+auto_tangle: t ")
+  (evil-force-normal-state))
+(map! :leader
+      :desc "Insert auto_tangle tag" "i a" #'dt/insert-auto-tangle-tag)
+#+end_src
+
+* Keybinds
+
+#+begin_src emacs-lisp
+(map! :leader "." nil)
+(map! :leader
+      :desc "Better Find File"
+      "." #'zoxide-find-file)
+(map! :leader
+      :desc "Open files buffer"
+      "e" #'dirvish)
+#+end_src
+
+* User stuff
+
+#+begin_src emacs-lisp
+(setq user-full-name "Patrick Lee"
+      user-mail-address "leepatrick338@gmail.com")
+#+end_src
+* Some stuff to make things work well
+- `doom-font' -- the primary font to use
+- `doom-variable-pitch-font' -- a non-monospace font (where applicable)
+- `doom-big-font' -- used for `doom-big-font-mode'; use this for
+  presentations or streaming.
+- `doom-symbol-font' -- for symbols
+- `doom-serif-font' -- for the `fixed-pitch-serif' face
+See 'C-h v doom-font' for documentation and more examples of what they
+accept. For example:
+Whenever you reconfigure a package, make sure to wrap your config in an
+`after!' block, otherwise Doom's defaults may override your settings. E.g.
+The exceptions to this rule:
+  - Setting file/directory variables (like `org-directory')
+  - Setting variables which explicitly tell you to set them before their
+    package is loaded (see 'C-h v VARIABLE' to look up their documentation).
+  - Setting doom variables (which start with 'doom-' or '+').
+- `load!' for loading external *.el files relative to this one
+- `use-package!' for configuring packages
+- `after!' for running code after a package has loaded
+- `add-load-path!' for adding directories to the `load-path', relative to
+  this file. Emacs searches the `load-path' when you load packages with
+  `require' or `use-package'.
+- `map!' for binding new keys
+the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
+This will open documentation for it, including demos of how they are used.
+Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+etc).
+You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
+they are implemented.
+#+begin_src emacs-lisp
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t)
+#+end_src
+
+* Projectile stuff
+#+begin_src emacs-lisp
+(after! projectile
+  (setq projectile-project-root-files-bottom-up (remove ".git"
+    projectile-project-root-files-bottom-up)
+        ))
+#+end_src
+* Undo stuff
+#+begin_src emacs-lisp
+  (after! undo-tree
+    (setq undo-tree-auto-save-history nil))
+#+end_src
+#  LocalWords:  Dirvish
