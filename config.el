@@ -18,6 +18,7 @@
 (xterm-mouse-mode 1)
 (setq fancy-splash-image (random-file-in-directory "~/assets/emacs_stuff"))
 (setq doom-font (font-spec :family "JetBrains Mono " :size 15))
+(zoom-mode t)
 
 (map! :map cdlatex-mode-map
       :i "TAB" #'cdlatex-tab)
@@ -74,7 +75,14 @@
       "." #'zoxide-find-file)
 (map! :leader
       :desc "Open files buffer"
-      "e" #'dirvish)
+      "e" #'dired)
+(map! :leader
+      :desc "Ripgrep a directory"
+      "r g" #'deadgrep)
+(map! "C-h" #'windmove-left
+      "C-j" #'windmove-down
+      "C-k" #'windmove-up
+      "C-l" #'windmove-right)
 
 (setq user-full-name "Patrick Lee"
       user-mail-address "leepatrick338@gmail.com")
@@ -86,6 +94,29 @@
   (setq projectile-project-root-files-bottom-up (remove ".git"
     projectile-project-root-files-bottom-up)
         ))
+(setq projectile-project-search-path '("~/.config/doom" "~/dotfiles" "~/work/phptest"))
+(setq projectile-ignored-projects '("~"))
+(setq projectile-known-projects '("~/dotfiles"
+                                   "~/.config/doom"
+                                   ))
 
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))
+
+(setq lsp-pyright-langserver-command "basedpyright")
+(pyvenv-mode t)
+(setq pyvenv-post-activate-hooks
+      (list (lambda ()
+              (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+(setq pyvenv-post-deactivate-hooks
+      (list (lambda ()
+              (setq python-shell-interpreter "python3"))))
+(defun my-auto-activate-venv ()
+  "Automatically activate Python virtual environment if .venv exists."
+  (interactive)
+  (when-let ((venv-path (locate-dominating-file default-directory ".venv")))
+    (let ((venv-dir (expand-file-name ".venv" venv-path)))
+      (when (file-directory-p venv-dir)
+        (message "Activating virtual environment: %s" venv-dir)
+        (pyvenv-activate venv-dir)))))
+(add-hook! python-mode-hook #'my-auto-activate-venv)

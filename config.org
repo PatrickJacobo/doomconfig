@@ -12,6 +12,7 @@
 - [[Some stuff to make things work well][Some stuff to make things work well]]
 - [[Projectile stuff][Projectile stuff]]
 - [[Undo stuff][Undo stuff]]
+- [[Python stuff][Python stuff]]
 
 * Cosmetics
 This are some global cosmetic customization to the setup
@@ -25,6 +26,7 @@ Mouse
 Splash image for the dashboard
 Scroll margin
 Nice cursor
+Zoom mode (to enable zoom automatically on currently oppened window)
 #+begin_src emacs-lisp
 (defun random-file-in-directory (directory)
   "Return the path of a random file in DIRECTORY."
@@ -46,10 +48,8 @@ Nice cursor
 (xterm-mouse-mode 1)
 (setq fancy-splash-image (random-file-in-directory "~/assets/emacs_stuff"))
 (setq doom-font (font-spec :family "JetBrains Mono " :size 15))
+(zoom-mode t)
 #+end_src
-
-#+RESULTS:
-: #<font-spec nil nil JetBrains\ Mono\  nil nil nil nil nil 15 nil nil nil nil>
 
 * Latex stuff
 LSP for Latex
@@ -131,7 +131,14 @@ This sets up some org mode stuff
       "." #'zoxide-find-file)
 (map! :leader
       :desc "Open files buffer"
-      "e" #'dirvish)
+      "e" #'dired)
+(map! :leader
+      :desc "Ripgrep a directory"
+      "r g" #'deadgrep)
+(map! "C-h" #'windmove-left
+      "C-j" #'windmove-down
+      "C-k" #'windmove-up
+      "C-l" #'windmove-right)
 #+end_src
 
 * User stuff
@@ -165,7 +172,7 @@ The exceptions to this rule:
 - `map!' for binding new keys
 the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
 This will open documentation for it, including demos of how they are used.
-Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+Alternatively, use `C-h oThese commands will be available in the emacs 27.1 release.' to look up a symbol (functions, variables, faces,
 etc).
 You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 they are implemented.
@@ -180,10 +187,37 @@ they are implemented.
   (setq projectile-project-root-files-bottom-up (remove ".git"
     projectile-project-root-files-bottom-up)
         ))
+(setq projectile-project-search-path '("~/.config/doom" "~/dotfiles" "~/work/phptest"))
+(setq projectile-ignored-projects '("~"))
+(setq projectile-known-projects '("~/dotfiles"
+                                   "~/.config/doom"
+                                   ))
 #+end_src
 * Undo stuff
 #+begin_src emacs-lisp
   (after! undo-tree
     (setq undo-tree-auto-save-history nil))
 #+end_src
+* Python stuff
+#+begin_src emacs-lisp
+(setq lsp-pyright-langserver-command "basedpyright")
+(pyvenv-mode t)
+(setq pyvenv-post-activate-hooks
+      (list (lambda ()
+              (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+(setq pyvenv-post-deactivate-hooks
+      (list (lambda ()
+              (setq python-shell-interpreter "python3"))))
+(defun my-auto-activate-venv ()
+  "Automatically activate Python virtual environment if .venv exists."
+  (interactive)
+  (when-let ((venv-path (locate-dominating-file default-directory ".venv")))
+    (let ((venv-dir (expand-file-name ".venv" venv-path)))
+      (when (file-directory-p venv-dir)
+        (message "Activating virtual environment: %s" venv-dir)
+        (pyvenv-activate venv-dir)))))
+(add-hook! python-mode-hook #'my-auto-activate-venv)
+#+end_src
+
+
 #  LocalWords:  Dirvish

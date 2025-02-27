@@ -3,7 +3,7 @@
 
 ;; To install a package with Doom you must declare them here and run 'doom sync'
 ;; on the command line, then restart Emacs for the changes to take effect -- or
-;; use 'M-x doom/reload'.
+
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
@@ -47,10 +47,12 @@
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
+
+
 (package! catppuccin-theme)
 (package! zoxide.el)
-(package! ts-fold
-  :recipe (:host github :repo "emacs-tree-sitter/ts-fold"))
+(package! treesit-fold
+  :recipe (:host github :repo "emacs-tree-sitter/treesit-fold"))
 (package! xenops)
 (package! beacon)
 (package! nyan-mode)
@@ -63,3 +65,8 @@
 (package! org-auto-tangle)
 (package! toc-org)
 (package! gnuplot)
+(package! zoom)
+(package! literate-calc-mode)
+(package! polymode)
+(package! tldr)
+(package! deadgrep)
