@@ -4,8 +4,10 @@
          (file-count (length files)))
     (when (> file-count 0) ; Check if there are any files in the directory
       (nth (random file-count) files)))) ; Return a random file from the list
-(setq doom-theme 'catppuccin)
-(add-hook 'server-after-make-frame-hook #'catppuccin-reload)
+;; (setq doom-theme 'catppuccin)
+;; (add-hook 'server-after-make-frame-hook #'catppuccin-reload)
+(setq doom-theme 'doom-tokyo-night)
+ (add-to-list 'default-frame-alist '(alpha . 90))
 (setq display-line-numbers-type 'relative)
 (setq dirvish-attributes
       '(vc-state subtree-state git-msg file-time file-size))
@@ -17,7 +19,7 @@
 (nyan-mode)
 (xterm-mouse-mode 1)
 (setq fancy-splash-image (random-file-in-directory "~/assets/emacs_stuff"))
-(setq doom-font (font-spec :family "JetBrains Mono " :size 15))
+(setq doom-font (font-spec :family "Iosevka" :size 15))
 (zoom-mode t)
 
 (map! :map cdlatex-mode-map
@@ -79,16 +81,13 @@
 (map! :leader
       :desc "Ripgrep a directory"
       "r g" #'deadgrep)
-(map! "C-h" #'windmove-left
-      "C-j" #'windmove-down
-      "C-k" #'windmove-up
-      "C-l" #'windmove-right)
 
 (setq user-full-name "Patrick Lee"
       user-mail-address "leepatrick338@gmail.com")
 
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t)
+(auto-save-visited-mode 1)
 
 (after! projectile
   (setq projectile-project-root-files-bottom-up (remove ".git"
@@ -103,6 +102,7 @@
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))
 
+(add-hook! 'python-mode-hook (modify-syntax-entry ?_ "w"))
 (setq lsp-pyright-langserver-command "basedpyright")
 (pyvenv-mode t)
 (setq pyvenv-post-activate-hooks
@@ -111,12 +111,3 @@
 (setq pyvenv-post-deactivate-hooks
       (list (lambda ()
               (setq python-shell-interpreter "python3"))))
-(defun my-auto-activate-venv ()
-  "Automatically activate Python virtual environment if .venv exists."
-  (interactive)
-  (when-let ((venv-path (locate-dominating-file default-directory ".venv")))
-    (let ((venv-dir (expand-file-name ".venv" venv-path)))
-      (when (file-directory-p venv-dir)
-        (message "Activating virtual environment: %s" venv-dir)
-        (pyvenv-activate venv-dir)))))
-(add-hook! python-mode-hook #'my-auto-activate-venv)

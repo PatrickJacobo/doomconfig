@@ -1,4 +1,4 @@
-#+title: Configuration for DOOM
+r+title: Configuration for DOOM
 #+author: Patrick Lee
 #+email: leepatrick338@gmail.com
 
@@ -27,6 +27,7 @@ Splash image for the dashboard
 Scroll margin
 Nice cursor
 Zoom mode (to enable zoom automatically on currently oppened window)
+Sets transparency (very important)
 #+begin_src emacs-lisp
 (defun random-file-in-directory (directory)
   "Return the path of a random file in DIRECTORY."
@@ -34,8 +35,10 @@ Zoom mode (to enable zoom automatically on currently oppened window)
          (file-count (length files)))
     (when (> file-count 0) ; Check if there are any files in the directory
       (nth (random file-count) files)))) ; Return a random file from the list
-(setq doom-theme 'catppuccin)
-(add-hook 'server-after-make-frame-hook #'catppuccin-reload)
+;; (setq doom-theme 'catppuccin)
+;; (add-hook 'server-after-make-frame-hook #'catppuccin-reload)
+(setq doom-theme 'doom-tokyo-night)
+ (add-to-list 'default-frame-alist '(alpha . 90))
 (setq display-line-numbers-type 'relative)
 (setq dirvish-attributes
       '(vc-state subtree-state git-msg file-time file-size))
@@ -47,7 +50,7 @@ Zoom mode (to enable zoom automatically on currently oppened window)
 (nyan-mode)
 (xterm-mouse-mode 1)
 (setq fancy-splash-image (random-file-in-directory "~/assets/emacs_stuff"))
-(setq doom-font (font-spec :family "JetBrains Mono " :size 15))
+(setq doom-font (font-spec :family "Iosevka" :size 15))
 (zoom-mode t)
 #+end_src
 
@@ -75,7 +78,7 @@ Xenops; cause it does a lot of things
 #+end_src
 
 * Shell opts
-This shell opts are somewhat "inspired" by DT;
+rhis shell opts are somewhat "inspired" by DT;
 And with inspired I mean directly stolen.
 
 #+begin_src emacs-lisp
@@ -135,10 +138,6 @@ This sets up some org mode stuff
 (map! :leader
       :desc "Ripgrep a directory"
       "r g" #'deadgrep)
-(map! "C-h" #'windmove-left
-      "C-j" #'windmove-down
-      "C-k" #'windmove-up
-      "C-l" #'windmove-right)
 #+end_src
 
 * User stuff
@@ -147,6 +146,7 @@ This sets up some org mode stuff
 (setq user-full-name "Patrick Lee"
       user-mail-address "leepatrick338@gmail.com")
 #+end_src
+
 * Some stuff to make things work well
 - `doom-font' -- the primary font to use
 - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
@@ -179,7 +179,9 @@ they are implemented.
 #+begin_src emacs-lisp
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t)
+(auto-save-visited-mode 1)
 #+end_src
+
 
 * Projectile stuff
 #+begin_src emacs-lisp
@@ -200,6 +202,7 @@ they are implemented.
 #+end_src
 * Python stuff
 #+begin_src emacs-lisp
+(add-hook! 'python-mode-hook (modify-syntax-entry ?_ "w"))
 (setq lsp-pyright-langserver-command "basedpyright")
 (pyvenv-mode t)
 (setq pyvenv-post-activate-hooks
@@ -208,16 +211,6 @@ they are implemented.
 (setq pyvenv-post-deactivate-hooks
       (list (lambda ()
               (setq python-shell-interpreter "python3"))))
-(defun my-auto-activate-venv ()
-  "Automatically activate Python virtual environment if .venv exists."
-  (interactive)
-  (when-let ((venv-path (locate-dominating-file default-directory ".venv")))
-    (let ((venv-dir (expand-file-name ".venv" venv-path)))
-      (when (file-directory-p venv-dir)
-        (message "Activating virtual environment: %s" venv-dir)
-        (pyvenv-activate venv-dir)))))
-(add-hook! python-mode-hook #'my-auto-activate-venv)
 #+end_src
-
 
 #  LocalWords:  Dirvish

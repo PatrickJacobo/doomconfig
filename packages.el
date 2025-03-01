@@ -70,3 +70,5 @@
 (package! polymode)
 (package! tldr)
 (package! deadgrep)
+(package! nov.el)
+
