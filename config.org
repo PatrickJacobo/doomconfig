@@ -1,4 +1,5 @@
-r+title: Configuration for DOOM
+#+title: Configuration for DOOM
+#+subtitle: Schizo stuff
 #+author: Patrick Lee
 #+email: leepatrick338@gmail.com
 
