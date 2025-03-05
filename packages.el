@@ -71,4 +71,3 @@
 (package! tldr)
 (package! deadgrep)
 (package! nov.el)
-

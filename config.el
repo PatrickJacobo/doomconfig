@@ -21,6 +21,7 @@
 (setq fancy-splash-image (random-file-in-directory "~/assets/emacs_stuff"))
 (setq doom-font (font-spec :family "Iosevka" :size 15))
 (zoom-mode t)
+(rainbow-delimiters-mode 1)
 
 (map! :map cdlatex-mode-map
       :i "TAB" #'cdlatex-tab)
@@ -71,6 +72,13 @@
 (map! :leader
       :desc "Insert auto_tangle tag" "i a" #'dt/insert-auto-tangle-tag)
 
+(setq org-agenda-files (list "~/org/work.org"
+                             "~/org/personal.org"
+                             "~/org/schizo.org"))
+
+(setq org-roam-directory (file-truename "~/org/roam"))
+(org-roam-db-autosync-mode)
+
 (map! :leader "." nil)
 (map! :leader
       :desc "Better Find File"
@@ -79,8 +87,9 @@
       :desc "Open files buffer"
       "e" #'dired)
 (map! :leader
-      :desc "Ripgrep a directory"
-      "r g" #'deadgrep)
+      :desc "Clone"
+      :m
+      "y" #'clipboard-kill-ring-save)
 
 (setq user-full-name "Patrick Lee"
       user-mail-address "leepatrick338@gmail.com")
@@ -88,6 +97,10 @@
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t)
 (auto-save-visited-mode 1)
+(after! tramp-mode
+        (add-to-list 'tramp-connection-properties
+                (list (regexp-quote "/ssh:prod:")
+                        "remote-shell" "/usr/bin/zsh")))
 
 (after! projectile
   (setq projectile-project-root-files-bottom-up (remove ".git"

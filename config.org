@@ -8,6 +8,8 @@
 - [[Latex stuff][Latex stuff]]
 - [[Shell opts][Shell opts]]
 - [[Org-mode stuff][Org-mode stuff]]
+  - [[Org agenda stuff][Org agenda stuff]]
+  - [[Org Roam stuff][Org Roam stuff]]
 - [[Keybinds][Keybinds]]
 - [[User stuff][User stuff]]
 - [[Some stuff to make things work well][Some stuff to make things work well]]
@@ -53,7 +55,9 @@ Sets transparency (very important)
 (setq fancy-splash-image (random-file-in-directory "~/assets/emacs_stuff"))
 (setq doom-font (font-spec :family "Iosevka" :size 15))
 (zoom-mode t)
+(rainbow-delimiters-mode 1)
 #+end_src
+
 
 * Latex stuff
 LSP for Latex
@@ -103,6 +107,7 @@ And with inspired I mean directly stolen.
 * Org-mode stuff
 This sets up some org mode stuff
 
+This block are global org mode options
 #+begin_src emacs-lisp
 (setq org-directory "~/org/")
 (after! org
@@ -125,6 +130,21 @@ This sets up some org mode stuff
 (map! :leader
       :desc "Insert auto_tangle tag" "i a" #'dt/insert-auto-tangle-tag)
 #+end_src
+** Org agenda stuff
+This sets up the agenda
+#+begin_src emacs-lisp
+(setq org-agenda-files (list "~/org/work.org"
+                             "~/org/personal.org"
+                             "~/org/schizo.org"))
+
+#+end_src
+** Org Roam stuff
+This sets up Org-roam to work on ~/org
+#+begin_src emacs-lisp
+(setq org-roam-directory (file-truename "~/org/roam"))
+(org-roam-db-autosync-mode)
+#+end_src
+
 
 * Keybinds
 
@@ -137,12 +157,12 @@ This sets up some org mode stuff
       :desc "Open files buffer"
       "e" #'dired)
 (map! :leader
-      :desc "Ripgrep a directory"
-      "r g" #'deadgrep)
+      :desc "Clone"
+      :m
+      "y" #'clipboard-kill-ring-save)
 #+end_src
 
 * User stuff
-
 #+begin_src emacs-lisp
 (setq user-full-name "Patrick Lee"
       user-mail-address "leepatrick338@gmail.com")
@@ -181,9 +201,11 @@ they are implemented.
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t)
 (auto-save-visited-mode 1)
+(after! tramp-mode
+        (add-to-list 'tramp-connection-properties
+                (list (regexp-quote "/ssh:prod:")
+                        "remote-shell" "/usr/bin/zsh")))
 #+end_src
-
-
 * Projectile stuff
 #+begin_src emacs-lisp
 (after! projectile
